@@ -11,3 +11,7 @@ if __name__ == "__main__":
     data = DATA()
     rransac = RRANSAC()
     plotter = PLOTTER()
+
+    data.create_points()
+    data.visualize()
+
