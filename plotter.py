@@ -12,12 +12,14 @@ class PLOTTER:
         self.iter = 0
         pass
 
-    def register_plot(self, title, x_label, y_label, plot_type, number_channels):
+    def register_plot(self, title, x_label, y_label, plot_type, number_channels, bounds):
         if plot_type == 0:
             fig, ax = plt.subplots()
             ax.set_title(title)
             ax.set_xlabel(x_label)
             ax.set_ylabel(y_label)
+            ax.set_xlim(bounds[0:2])
+            ax.set_ylim(bounds[2:4])
             channels = []
             for i in range(number_channels):
                 line, = ax.plot([], [])
@@ -29,6 +31,8 @@ class PLOTTER:
             ax.set_title(title)
             ax.set_xlabel(x_label)
             ax.set_ylabel(y_label)
+            ax.set_xlim(bounds[0:2])
+            ax.set_ylim(bounds[2:4])
             channels = []
             for i in range(number_channels):
                 scatt = ax.scatter([], [], color='red', s=2)
