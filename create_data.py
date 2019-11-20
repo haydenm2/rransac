@@ -38,5 +38,6 @@ class DATA:
             plt.plot(self.t, self.x[j], 'r.')
         plt.title('Created Data Points')
         plt.xlabel('time (s)')
+        plt.grid(True)
         plt.show()
 
