@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 # Class that creates data based on simple 1D motion models (e.g. constant velocity)
 
 class DATA:
-    def __init__(self, targets=3, duration=10, dt=0.1):
+    def __init__(self, targets=1, duration=10, dt=0.1):
         self.duration = duration
         self.dt = dt
         self.num_iterations = int(self.duration/self.dt)

@@ -9,17 +9,21 @@ class RRANSAC:
         self.model_type = model_type
         self.points = []
         self.t = []
+        self.window_iter = 0
         self.init = True
         self.ransac_iterations = 100
-        self.error_threshold = 4 * np.sqrt(sensor_covariance)  #
+        self.error_threshold = 2 * np.sqrt(sensor_covariance)  #
         self.stopping_criteria = 0.7
-        self.ransac_window = 10
-        self.minimum_subset = 5
+        self.ransac_window = 5
         self.points_per_iteration = 0
         self.consensus_set = []
+        self.consensus_set_t = []
+        self.model = []
+        self.model_t = []
 
     def RANSAC(self, xpoints, ypoints):
         best_consensus = []
+        best_consensus_t = []
         for j in range(self.ransac_iterations):
             # Generate subset
             subset = np.zeros((1, 0))
@@ -35,16 +39,20 @@ class RRANSAC:
 
             # Compute consensus set
             consensus = []
+            consensus_t = []
             for k in range(len(ypoints[0])):
                 e_ind = np.argmin(np.abs((c[0]*xpoints[k] + c[1]) - ypoints[:, k]))
                 e = np.abs((c[0]*xpoints[k] + c[1]) - ypoints[e_ind, k])
                 if e < self.error_threshold:
                     consensus = np.hstack((consensus, ypoints[e_ind, k]))
+                    consensus_t = np.hstack((consensus_t, xpoints[k]))
             if len(consensus) > len(best_consensus):
                 best_consensus = consensus
+                best_consensus_t = consensus_t
                 if len(best_consensus) > self.stopping_criteria * len(xpoints):
                     break
         self.consensus_set = best_consensus
+        self.consensus_set_t = best_consensus_t
 
     def AppendData(self, time, data):
         if self.init:
@@ -59,8 +67,12 @@ class RRANSAC:
     def Update(self, time, data):
         # Update point set
         self.AppendData(time, data)
-        if len(self.points[0]) >= self.ransac_window:
-            self.RANSAC(self.t, self.points)
+        self.window_iter += 1
+        if self.window_iter == self.ransac_window:
+            self.RANSAC(self.t[-self.ransac_window:], self.points[:, -self.ransac_window:])
+            self.model = np.hstack((self.model, self.consensus_set))
+            self.model_t = np.hstack((self.model_t, self.consensus_set_t))
+            self.window_iter = 0
 
 
 
