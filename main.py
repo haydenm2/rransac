@@ -8,6 +8,8 @@ from plotter import PLOTTER
 
 
 if __name__ == "__main__":
+    live = True  # live plotting flag
+
     data = DATA()
     rransac = RRANSAC(data.noise_cov)
     plotter = PLOTTER()
@@ -44,15 +46,17 @@ if __name__ == "__main__":
 
     for k in range(len(data.t)):
         rransac.Update(data.get_time(), data.get_next_points())
+        if live:
+            for l in range(data.num_channels):
+                plotter.access_plot(0, l).set_offsets(np.hstack((rransac.t.reshape(-1, 1), rransac.points[l, :].reshape(-1, 1))))
+            plotter.access_plot(0, data.num_channels).set_ydata(rransac.model[:])
+            plotter.access_plot(0, data.num_channels).set_xdata(rransac.model_t[:])
+            plotter.visualize()
+    if not live:
         for l in range(data.num_channels):
-            # try:
-            #     plotter.access_plot(0, l).set_ydata(rransac.points[l, :])
-            #     plotter.access_plot(0, l).set_xdata(rransac.t[l, :])
-            # except:
             plotter.access_plot(0, l).set_offsets(np.hstack((rransac.t.reshape(-1, 1), rransac.points[l, :].reshape(-1, 1))))
         plotter.access_plot(0, data.num_channels).set_ydata(rransac.model[:])
         plotter.access_plot(0, data.num_channels).set_xdata(rransac.model_t[:])
-        plotter.visualize()
     plt.show()
 
 

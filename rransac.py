@@ -5,21 +5,22 @@ import numpy as np
 # Class implementing the Recursive Random Sampling and Consensus (RRANSAC) algorithm which takes in iterations of noisy data and extracts viable motion models.
 
 class RRANSAC:
-    def __init__(self, sensor_covariance, model_type=1):
+    def __init__(self, sensor_covariance, model_type=1, ransac_update_type=1):
         self.model_type = model_type
         self.points = []
         self.t = []
         self.window_iter = 0
         self.init = True
-        self.ransac_iterations = 100
-        self.error_threshold = 2 * np.sqrt(sensor_covariance)  #
-        self.stopping_criteria = 0.7
+        self.ransac_iterations = 200
+        self.error_threshold = 2.5 * np.sqrt(sensor_covariance)  #
+        self.stopping_criteria = 0.8
         self.ransac_window = 5
         self.points_per_iteration = 0
         self.consensus_set = []
         self.consensus_set_t = []
         self.model = []
         self.model_t = []
+        self.ransac_update_type = ransac_update_type  # 0: jumping  |  1: sliding window
 
     def RANSAC(self, xpoints, ypoints):
         best_consensus = []
@@ -68,11 +69,24 @@ class RRANSAC:
         # Update point set
         self.AppendData(time, data)
         self.window_iter += 1
-        if self.window_iter == self.ransac_window:
-            self.RANSAC(self.t[-self.ransac_window:], self.points[:, -self.ransac_window:])
-            self.model = np.hstack((self.model, self.consensus_set))
-            self.model_t = np.hstack((self.model_t, self.consensus_set_t))
-            self.window_iter = 0
+
+        # RANSAC iteration
+        # --------------------- Jumping Window Approach ---------------------
+        if self.ransac_update_type == 0:
+            if self.window_iter == self.ransac_window:
+                self.RANSAC(self.t[-self.ransac_window:], self.points[:, -self.ransac_window:])
+                self.model = np.hstack((self.model, self.consensus_set))
+                self.model_t = np.hstack((self.model_t, self.consensus_set_t))
+                self.window_iter = 0
+
+        # --------------------- Sliding Window Approach ---------------------
+        if self.ransac_update_type == 1:
+            if self.window_iter >= self.ransac_window:
+                self.RANSAC(self.t[-self.ransac_window:], self.points[:, -self.ransac_window:])
+                self.model = np.hstack((self.model[:-(self.ransac_window-1)], self.consensus_set))
+                self.model_t = np.hstack((self.model_t[:-(self.ransac_window-1)], self.consensus_set_t))
+
+        # TODO: Add in RRANSAC features
 
 
 
