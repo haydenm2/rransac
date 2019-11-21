@@ -20,7 +20,7 @@ class PLOTTER:
         ax.set_ylabel(y_label)
         ax.set_xlim(bounds[0:2])
         ax.set_ylim(bounds[2:4])
-        for j in range(number_channels):
+        for j in range(len(plot_types)):
             if plot_types[j] == 0:
                 line, = ax.plot([], [])
                 channels.append(line)

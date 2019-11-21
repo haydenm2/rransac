@@ -33,10 +33,7 @@ class RRANSAC:
             subset = ypoints[0, :]
 
             # Generate Hypothesis
-            y = subset.reshape((-1, 1))
-            A = np.hstack((xpoints.reshape((-1, 1)), np.ones((len(xpoints), 1))))
-            A_T = A.transpose()
-            c = np.linalg.inv(A_T @ A) @ A_T @ y
+            c = self.GenerateHypothesis(xpoints, subset, self.model_type)
 
             # Compute consensus set
             consensus = []
@@ -54,6 +51,13 @@ class RRANSAC:
                     break
         self.consensus_set = best_consensus
         self.consensus_set_t = best_consensus_t
+
+    def GenerateHypothesis(self, xpoints, ypoints, model_type):
+        y = ypoints.reshape((-1, 1))
+        A = np.hstack((xpoints.reshape((-1, 1)), np.ones((len(xpoints), 1))))
+        A_T = A.transpose()
+        c = np.linalg.inv(A_T @ A) @ A_T @ y
+        return c
 
     def AppendData(self, time, data):
         if self.init:
