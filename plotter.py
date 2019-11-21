@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 class PLOTTER:
     def __init__(self):
         self.plots = []
-        self.type = 0  # 0: LINE, 1: SCATTER
+        self.type = 0  # 0: LINE | 1: SCATTER
         self.iter = 0
         pass
 
@@ -20,7 +20,7 @@ class PLOTTER:
             ax.set_ylabel(y_label)
             ax.set_xlim(bounds[0:2])
             ax.set_ylim(bounds[2:4])
-            channels = []
+            channels = [ax]
             for i in range(number_channels):
                 line, = ax.plot([], [])
                 channels.append(line)
@@ -33,7 +33,7 @@ class PLOTTER:
             ax.set_ylabel(y_label)
             ax.set_xlim(bounds[0:2])
             ax.set_ylim(bounds[2:4])
-            channels = []
+            channels = [ax]
             for i in range(number_channels):
                 scatt = ax.scatter([], [], color='red', s=2)
                 channels.append(scatt)
@@ -45,12 +45,13 @@ class PLOTTER:
         pass
 
     def access_plot(self, plot_number, channel_number):
-        return self.plots[plot_number][channel_number]
+        return self.plots[plot_number][channel_number+1]  # skip the plot axis (or access with an input of -1
 
     def visualize(self):
         plt.legend()
         plt.grid(True)
-        plt.show()
+        plt.pause(0.1)
+        # plt.show()
 
 
 
