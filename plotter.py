@@ -12,36 +12,25 @@ class PLOTTER:
         self.iter = 0
         pass
 
-    def register_plot(self, title, x_label, y_label, plot_type, number_channels, bounds):
-        if plot_type == 0:
-            fig, ax = plt.subplots()
-            ax.set_title(title)
-            ax.set_xlabel(x_label)
-            ax.set_ylabel(y_label)
-            ax.set_xlim(bounds[0:2])
-            ax.set_ylim(bounds[2:4])
-            channels = [ax]
-            for i in range(number_channels):
+    def register_plot(self, title, x_label, y_label, plot_types, number_channels, bounds):
+        fig, ax = plt.subplots()
+        channels = [ax]
+        ax.set_title(title)
+        ax.set_xlabel(x_label)
+        ax.set_ylabel(y_label)
+        ax.set_xlim(bounds[0:2])
+        ax.set_ylim(bounds[2:4])
+        for j in range(number_channels):
+            if plot_types[j] == 0:
                 line, = ax.plot([], [])
                 channels.append(line)
-            self.plots.append(channels)
-            self.iter += 1
-        elif plot_type == 1:
-            fig, ax = plt.subplots()
-            ax.set_title(title)
-            ax.set_xlabel(x_label)
-            ax.set_ylabel(y_label)
-            ax.set_xlim(bounds[0:2])
-            ax.set_ylim(bounds[2:4])
-            channels = [ax]
-            for i in range(number_channels):
+            elif plot_types[j] == 1:
                 scatt = ax.scatter([], [], color='red', s=2)
                 channels.append(scatt)
-
-            self.plots.append(channels)
-            self.iter += 1
-        else:
-            print("Invalid plot type")
+            else:
+                print("Invalid plot type")
+        self.plots.append(channels)
+        self.iter += 1
         pass
 
     def access_plot(self, plot_number, channel_number):
@@ -50,7 +39,7 @@ class PLOTTER:
     def visualize(self):
         plt.legend()
         plt.grid(True)
-        plt.pause(0.1)
+        plt.pause(0.01)
         # plt.show()
 
 

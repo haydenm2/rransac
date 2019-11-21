@@ -18,6 +18,7 @@ class DATA:
         self.x = np.zeros((self.num_channels, self.num_iterations))
         self.params = (np.random.rand(self.num_targets) * 2 - 1) * 5  # slope bounds between -5 and 5
         self.noise_cov = 0.5
+        self.current_iter = 0
 
     def create_points(self):
         self.x[:, 0] = np.random.rand(self.num_channels) * self.position_bound
@@ -32,6 +33,15 @@ class DATA:
 
     def insert_noise_data(self, iter):
         self.x[self.num_targets:self.num_channels, iter] = np.random.rand(self.num_noise_channels) * self.position_bound
+
+    def get_next_points(self):
+        points = self.x[:, self.current_iter]
+        self.current_iter += 1
+        return points
+
+    def get_time(self):
+        time = self.t[self.current_iter]
+        return time
 
     def visualize(self):
         for j in range(self.num_channels):
