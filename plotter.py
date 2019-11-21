@@ -12,7 +12,7 @@ class PLOTTER:
         self.iter = 0
         pass
 
-    def register_plot(self, title, x_label, y_label, plot_types, number_channels, bounds):
+    def register_plot(self, title, x_label, y_label, plot_types, bounds):
         fig, ax = plt.subplots()
         channels = [ax]
         ax.set_title(title)

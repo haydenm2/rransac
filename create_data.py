@@ -29,7 +29,10 @@ class DATA:
         pass
 
     def propogate(self, iter):
-        self.x[0:self.num_targets, iter] = self.x[0:self.num_targets, iter-1] + self.params*self.dt + np.random.randn(self.num_targets) * np.sqrt(self.noise_cov)
+        # # relative model propogation
+        # self.x[0:self.num_targets, iter] = self.x[0:self.num_targets, iter-1] + self.params*self.dt + np.random.randn(self.num_targets) * np.sqrt(self.noise_cov)
+        # global model propogation
+        self.x[0:self.num_targets, iter] = self.x[0:self.num_targets, 0] + self.params*self.t[iter] + np.random.randn(self.num_targets) * np.sqrt(self.noise_cov)
 
     def insert_noise_data(self, iter):
         self.x[self.num_targets:self.num_channels, iter] = np.random.rand(self.num_noise_channels) * self.position_bound
