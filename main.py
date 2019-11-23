@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     bound_extension = 0.2
     bounds = np.array((0, data.t[-1], 0-data.position_bound*(bound_extension), data.position_bound*(1 + bound_extension)))
-    plot_types = np.hstack((np.ones((data.num_channels)), np.zeros(3)))
+    plot_types = np.hstack((np.ones((data.num_channels)), np.zeros(4)))
     plotter.register_plot('Noisy Data', 'time (s)', '', plot_types, bounds)
     plt.title('RANSAC Model Estimation')
     plt.xlabel('time (s)')
@@ -25,6 +25,7 @@ if __name__ == "__main__":
     plotter.access_plot(0, data.num_channels).set_label('RANSAC Point Estimate')
     plotter.access_plot(0, data.num_channels+1).set_label('Full RANSAC Model Estimate')
     plotter.access_plot(0, data.num_channels+2).set_label('Actual Model')
+    plotter.access_plot(0, data.num_channels+3).set_label('Least Squares Model')
 
     for k in range(len(data.t)):
         rransac.Update(data.get_time(), data.get_next_points())
@@ -53,11 +54,18 @@ if __name__ == "__main__":
     plotter.access_plot(0, data.num_channels + 2).set_xdata(rransac.model_t[:])
     plotter.visualize()
 
+    # plot least squares linear model
+    y_ls = data.c_least_squares[0] * rransac.model_t + data.c_least_squares[1]
+    plotter.access_plot(0, data.num_channels + 3).set_ydata(y_ls)
+    plotter.access_plot(0, data.num_channels + 3).set_xdata(rransac.model_t[:])
+    plotter.visualize()
+
     # plot error
     y_err = y_est - y_true
     yp_err = rransac.model[:] - y_true
-    err_bounds = np.array((0, data.t[-1], -3, 3))
-    plotter.register_plot('Error', 'time (s)', '', [0, 0], err_bounds)
+    yls_err = y_ls - y_true
+    err_bounds = np.array((0, data.t[-1], -30, 30))
+    plotter.register_plot('Error', 'time (s)', '', [0, 0, 0], err_bounds)
     plt.title('RANSAC Model Estimation Error')
     plt.xlabel('time (s)')
     plotter.access_plot(1, 0).set_label('RANSAC Full Model Error')
@@ -66,6 +74,9 @@ if __name__ == "__main__":
     plotter.access_plot(1, 1).set_label('RANSAC Point Model Error')
     plotter.access_plot(1, 1).set_ydata(yp_err)
     plotter.access_plot(1, 1).set_xdata(rransac.model_t[:])
+    plotter.access_plot(1, 2).set_label('Least Squares Model Error')
+    plotter.access_plot(1, 2).set_ydata(yls_err)
+    plotter.access_plot(1, 2).set_xdata(rransac.model_t[:])
     plotter.visualize()
 
     # plot parameter estimates vs truth

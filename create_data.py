@@ -19,6 +19,7 @@ class DATA:
         self.params = (np.random.rand(self.num_targets) * 2 - 1) * 5  # slope bounds between -5 and 5
         self.noise_cov = 0.5
         self.current_iter = 0
+        self.c_least_squares = []
 
     def create_points(self):
         self.x[:, 0] = np.random.rand(self.num_channels) * self.position_bound
@@ -27,6 +28,17 @@ class DATA:
             self.propogate(i)
             self.insert_noise_data(i)
         pass
+        data_x = []
+        data_y = []
+
+        for j in range(self.num_channels):
+            data_x = np.hstack((data_x, self.t))
+            data_y = np.hstack((data_y, self.x[j, :]))
+
+        A = np.hstack((data_x.reshape(-1, 1), np.ones(np.shape(data_x.reshape(-1, 1)))))
+        A_T = A.transpose()
+        b = data_y.reshape(-1, 1)
+        self.c_least_squares = np.linalg.inv(A_T @ A) @ A_T @ b
 
     def propogate(self, iter):
         # # relative model propogation
